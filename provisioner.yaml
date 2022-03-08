@@ -1,0 +1,29 @@
+apiVersion: karpenter.sh/v1alpha5
+kind: Provisioner
+metadata:
+  name: default
+spec:
+  requirements:
+    # We don't use instance-type, because Karpenter can match the\
+    # correct type automatically, but you can define it
+    #
+    #- key: "node.kubernetes.io/instance-type"
+    #  operator: In
+    #  values: [t2.small, t2.large, t2.xlarge, t2.2xlarge]
+    - key: topology.kubernetes.io/zone
+      operator: In
+      values: [us-east-1a, us-east-1b, us-east-1c]
+    - key: karpenter.sh/capacity-type
+      operator: In
+      values: ["spot"] # We use spot instances because are cheaper
+  limits:
+    resources:
+      cpu: 1000
+  provider:
+    subnetSelector:
+      karpenter.sh/discovery: "{$USER}-karpenter-demo"
+    securityGroupSelector:
+      karpenter.sh/discovery: "{$USER}-karpenter-demo"
+  ttlSecondsAfterEmpty: 30
+  # If a node created by carpenter is empty for 30 seconds, karpenter\
+  # will shut it down and scale down the cluster

@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: teratip-test
+  labels:
+    app: teratip-test
+    component: web
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: teratip-test
+      component: web
+  template:
+    metadata:
+      labels:
+        app: teratip-test
+        component: web
+    spec:
+      containers:
+      - name: teratip-test
+        image: nginxdemos/hello
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 1000m
+            memory: 1Gi
+      nodeSelector:
+        topology.kubernetes.io/zone: us-east-1a
